@@ -6,12 +6,17 @@ export class Carrito{
 
     //Metodos del Carrito de Compras
 
-    agregarProducto(){
-
+    agregarProducto(producto){
+        const ProductoExistente = this.productos.find(item => item.nombre === producto.nombre);
+        if (ProductoExistente){
+            ProductoExistente.aumentarCantidad();
+        } else {
+            this.productos.push(producto);
+        }
     }
 
-    eliminarProducto(){
-
+    eliminarProducto(nombreProd){
+        this.productos = this.productos.filter(item => item.nombre !== nombreProd);
     }
 
     actualizarCantProducto (){
