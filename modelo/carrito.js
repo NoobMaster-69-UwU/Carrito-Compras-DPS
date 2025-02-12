@@ -1,6 +1,6 @@
 export class Carrito{
     constructor(){
-        this.productos;
+        this.productos = [];
     }
 
 
@@ -30,6 +30,7 @@ export class Carrito{
     }
 
     calcTotal(){
+        return this.calcularPrecioConIVA() * this.cantidad;
 
     }
 
