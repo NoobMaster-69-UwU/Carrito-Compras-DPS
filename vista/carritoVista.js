@@ -1,7 +1,5 @@
 export class CarritoVista {
-    constructor(carrito, controlador) {
-        this.carrito = carrito;
-        this.controlador = controlador;
+    constructor() {
         this.productosElement = document.getElementById("productos");
         this.carritoElement = document.getElementById("carrito");
         this.totalElement = document.getElementById("total");
@@ -27,7 +25,7 @@ export class CarritoVista {
     ocultarModal() {
         this.modal.style.display = "none";
     }
-    
+
     mostrarProductos(productos, agregarProductoCallback) {
         this.productosElement.innerHTML = "";
         productos.forEach(producto => {
@@ -46,27 +44,57 @@ export class CarritoVista {
             boton.addEventListener("click", () => {
                 const id = parseInt(boton.getAttribute("data-id"));
                 agregarProductoCallback(id);
-                this.mostrarCarrito(this.productos, this.carrito.calcularTotal());
             });
         });
     }
 
-    mostrarCarrito(productos, total) {
-        this.carritoElement.innerHTML = "";
-        if (productos.length === 0) {
-            this.carritoElement.innerHTML = "No hay productos en el carrito";
-        } else {
-            productos.forEach(producto => {
-                const item = document.createElement("div");
-                item.classList.add("list-group-item");
-                item.innerHTML = `
-                    <img src="${producto.imagen}" width="50"> 
-                    ${producto.nombre} - $${producto.precio} x ${producto.cantidad}
-                `;
-                this.carritoElement.appendChild(item);
-                
+    mostrarCarrito(productos, total, incrementarProducto, decrementarProducto, eliminarProducto) {
+        const carritoElemento = document.getElementById("carrito");
+        carritoElemento.innerHTML = ""; // Limpiar contenido previo
+
+        productos.forEach((producto) => {
+            const productoElemento = document.createElement("div");
+            productoElemento.classList.add("producto-carrito");
+            productoElemento.innerHTML = `
+                <img src="${producto.imagen}" alt="${producto.nombre}" class="imagen-producto">
+                <div class="detalles">
+                    <p>${producto.nombre}</p>
+                    <p>Precio: $${producto.precio}</p>
+                    <p>Cantidad: ${producto.cantidad}</p>
+                </div>
+                <div class="acciones">
+                    <button class="btn-decremento" data-id="${producto.id}">-</button>
+                    <button class="btn-incremento" data-id="${producto.id}">+</button>
+                    <button class="btn-eliminar" data-id="${producto.id}">X</button>
+                </div>
+            `;
+            carritoElemento.appendChild(productoElemento);
+        });
+
+        // Mostrar total
+        const totalElemento = document.getElementById("total");
+        totalElemento.textContent = `Total: $${total}`;
+
+        // Asignar eventos a los botones
+        document.querySelectorAll(".btn-incremento").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+                const id = parseInt(e.target.getAttribute("data-id"));
+                incrementarProducto(id);
             });
-        }
-        this.totalElement.textContent = `Total: $${total.toFixed(2)}`;
+        });
+
+        document.querySelectorAll(".btn-decremento").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+                const id = parseInt(e.target.getAttribute("data-id"));
+                decrementarProducto(id);
+            });
+        });
+
+        document.querySelectorAll(".btn-eliminar").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+                const id = parseInt(e.target.getAttribute("data-id"));
+                eliminarProducto(id);
+            });
+        });
     }
 }

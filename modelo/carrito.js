@@ -28,40 +28,34 @@ export class Carrito {
         this.guardarCarrito();
     }
 
-    aumentarCantidadProducto(id) {
-        const producto = this.productos.find(item => item.id === id);
-        if (producto) {
-            producto.cantidad += 1;
-            this.guardarCarrito();
-            return true;
-        }
-        return false;
-    }
-
-    disminuirCantidadProducto(id) {
-        const producto = this.productos.find(item => item.id === id);
-        if (producto) {
-            producto.cantidad -= 1;
-            if (producto.cantidad <= 0) {
-                this.eliminarProducto(id);
-                return true;
-            } else {
-                this.guardarCarrito();
-                return false;
-            }
-        }
-        return false;
-    }
-
     eliminarProducto(id) {
         this.productos = this.productos.filter(item => item.id !== id);
         this.guardarCarrito();
     }
 
-    calcularTotal() {
-        return this.productos.reduce((total, producto) => total + (producto.precio * producto.cantidad), 0);
+    actualizarCantProducto(id, cantidad) {
+        const producto = this.productos.find(item => item.id === id);
+        if (producto) {
+            producto.cantidad += cantidad;
+            if (producto.cantidad <= 0) {
+                this.eliminarProducto(id); // Elimina si la cantidad es 0
+            } else {
+                this.guardarCarrito();
+            }
+        }
+    }
+    
+    calcularPrecioConIVA() {
+        const IVA = 0.13;
+        return this.productos.reduce((total, producto) => {
+            return total + (producto.precio * producto.cantidad * (1 + IVA));
+        }, 0);
     }
 
+    calcularTotal() {
+        return this.productos.reduce((total, producto) => total + producto.obtenerPrecioTotal(), 0);
+    }
+    
     limpiarCarrito() {
         this.productos = [];
         localStorage.removeItem("carrito");
