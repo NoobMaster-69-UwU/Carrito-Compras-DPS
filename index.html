@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+
+    <h1 class="text-center">Lista de Productos</h1>
+    <div id="productos-container" class="container"></div> <!-- Aquí se listarán los productos -->
+
+    <button id="abrirCarrito" class="btn btn-outline-primary">🛒 Ver Carrito</button>
+
+    <!-- Ventana modal del carrito -->
+    <div id="modalCarrito" class="modal">
+        <div class="modal-content">
+            <span class="cerrar">&times;</span>
+            <h2 class="text-center">Carrito de Compras</h2>
+            <div id="carrito" class="list-group"></div>
+            <p id="total" class="price text-center">Total: $0</p>
+        </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+
+</body>
+</html>
