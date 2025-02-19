@@ -2,14 +2,18 @@ export class Producto{
 
     //Definición del constructor con las propiedades del Producto
     
-    constructor(id, nombre, imagen, precio, cantidad){
+    constructor(id, nombre, precio, cantidad, imagen){
         this.id = id;
         this.nombre = nombre;
-        this.imagen = imagen;
         this.precio = precio;
         this.cantidad = cantidad;
+        this.imagen = imagen;
     }
 
+    obtenerPrecioTotal() {
+        return this.precio * this.cantidad;
+    }
+    
     aumentarCantidad(){
         this.cantidad += 1;
         return this.cantidad;
@@ -23,7 +27,7 @@ export class Producto{
         return 0; // Indica que el producto debe eliminarse
     }
     
-    obtenerPrecioTotal() {
-        return this.precio * this.cantidad;
+    calcularTotal() {
+        return this.productos.reduce((total, producto) => total + producto.obtenerPrecioTotal(), 0);
     }
 }
