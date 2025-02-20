@@ -99,7 +99,7 @@ export class CarritoControlador {
      */
     pagarCarrito() {
         if (this.carrito.productos.length === 0) {
-            alert("El carrito está vacío. Agrega productos antes de pagar.");
+            atob();
             return;
         }
 
