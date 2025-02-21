@@ -1,4 +1,3 @@
-
 import { CarritoVista } from "./vista/carritoVista.js";
 import { CarritoControlador } from "./controlador/carritoControlador.js";
 
@@ -40,15 +39,46 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // Mostrar el modal del carrito al hacer clic en el botón del carrito
-    const botonCarrito = document.getElementById("boton-carrito");
-    const modalCarrito = document.getElementById("modal-carrito");
+    const botonCarrito = document.getElementById("abrirCarrito");
+    const modalCarrito = document.getElementById("modalCarrito");
 
     botonCarrito.addEventListener("click", () => {
         modalCarrito.style.display = "block";
     });
 
     // Cerrar el modal del carrito al hacer clic en el botón de cerrar
-    document.getElementById("cerrar-modal").addEventListener("click", () => {
+    document.querySelector(".cerrar").addEventListener("click", () => {
         modalCarrito.style.display = "none";
     });
+
+    // ⬇️ Agrega el evento al botón de pago para llamar a la función en el controlador
+    const botonPagar = document.getElementById("pagarBtn");
+    if (botonPagar) {
+        botonPagar.addEventListener("click", () => {
+            controlador.pagarCarrito();
+        });
+    } else {
+        console.error("Error: No se encontró el botón de pagar.");
+    }
+
+    function mostrarNotificacion() {
+        const notificacion = document.getElementById("notificacion");
+        notificacion.style.display = "block";
+        notificacion.style.opacity = "1";
+
+        setTimeout(() => {
+            notificacion.style.opacity = "0";
+            setTimeout(() => {
+                notificacion.style.display = "none";
+            }, 500);
+        }, 2000);
+    }
+
+// Agrega la notificación cuando un producto se añade al carrito
+    document.querySelectorAll('.agregar-al-carrito').forEach(boton => {
+        boton.addEventListener('click', () => {
+            mostrarNotificacion();
+        });
+    });
+
 });
