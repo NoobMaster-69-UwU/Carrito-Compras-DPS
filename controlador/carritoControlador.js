@@ -11,13 +11,14 @@ export class CarritoControlador {
         }
 
         this.actualizarVistaCarrito(); // Llamamos la función al iniciar
+        this.agregarEventosBotones(); // Agrega eventos a los botones
     }
 
     async cargarProductos() {
         try {
             const respuesta = await fetch("../productos/productos.json");
             if (!respuesta.ok) throw new Error(`HTTP error! Status: ${respuesta.status}`);
-            
+
             const productos = await respuesta.json();
             localStorage.setItem("productosDisponibles", JSON.stringify(productos));
             this.vista.mostrarProductos(productos, this.agregarProducto.bind(this));
@@ -48,33 +49,33 @@ export class CarritoControlador {
         } else {
             alert("No hay stock disponible.");
         }
-        
+
         this.actualizarVistaCarrito();
     }
 
     incrementarProducto(id) {
         let productosDisponibles = JSON.parse(localStorage.getItem("productosDisponibles")) || [];
         let productoEnStock = productosDisponibles.find(p => p.id === id);
-        
+
         if (productoEnStock && productoEnStock.stock > 0) {
             this.carrito.actualizarCantProducto(id, 1);
             productoEnStock.stock -= 1;
             localStorage.setItem("productosDisponibles", JSON.stringify(productosDisponibles));
         }
-        
+
         this.actualizarVistaCarrito();
     }
 
     decrementarProducto(id) {
         let productosDisponibles = JSON.parse(localStorage.getItem("productosDisponibles")) || [];
         let productoEnStock = productosDisponibles.find(p => p.id === id);
-        
+
         if (productoEnStock) {
             this.carrito.actualizarCantProducto(id, -1);
             productoEnStock.stock += 1;
             localStorage.setItem("productosDisponibles", JSON.stringify(productosDisponibles));
         }
-        
+
         this.actualizarVistaCarrito();
     }
 
@@ -89,7 +90,40 @@ export class CarritoControlador {
             }
         }
         this.carrito.eliminarProducto(id);
-        
+
         this.actualizarVistaCarrito();
+    }
+
+    /**
+     * Simula el pago del carrito.
+     */
+    pagarCarrito() {
+        if (this.carrito.productos.length === 0) {
+            atob();
+            return;
+        }
+
+        const totalConIVA = this.carrito.calcularPrecioConIVA().toFixed(2);
+
+        const confirmacion = confirm(`Total a pagar: $${totalConIVA}\n¿Deseas proceder con el pago?`);
+        if (confirmacion) {
+            alert("Pago exitoso. ¡Gracias por tu compra!");
+            this.carrito.limpiarCarrito();
+            this.actualizarVistaCarrito();
+        }
+    }
+
+    /**
+     * Agrega el evento al botón de pago después de cargar el DOM.
+     */
+    agregarEventosBotones() {
+        const botonPagar = document.getElementById("pagarBtn");
+        if (botonPagar) {
+            botonPagar.addEventListener("click", () => {
+                this.pagarCarrito();
+            });
+        } else {
+            console.error("Error: No se encontró el botón de pagar.");
+        }
     }
 }
