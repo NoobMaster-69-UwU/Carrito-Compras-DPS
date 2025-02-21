@@ -5,25 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito de Compras</title>
     <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/vistas.css">
+    <link rel="stylesheet" href="styles/styleMain.css">
 </head>
+
 <body>
 
-    <h1 class="text-center">Lista de Productos</h1>
-    <div id="productos-container" class="container"></div> <!-- Aquí se listarán los productos -->
+<h1 class="text-center">Lista de Productos</h1>
+<div id="productos-container" class="container"></div> <!-- Aquí se listarán los productos -->
 
+<!-- Botón de carrito de compras en la esquina superior derecha -->
+<div class="cart-button-container">
     <button id="abrirCarrito" class="btn btn-outline-primary">🛒 Ver Carrito</button>
+</div>
 
-    <!-- Ventana modal del carrito -->
-    <div id="modalCarrito" class="modal">
-        <div class="modal-content">
-            <span class="cerrar">&times;</span>
-            <h2 class="text-center">Carrito de Compras</h2>
-            <div id="carrito" class="list-group"></div>
-            <p id="total" class="price text-center">Total: $0</p>
-        </div>
+<!-- Ventana modal del carrito -->
+<div id="modalCarrito" class="modal">
+    <div class="modal-content">
+        <span class="cerrar">&times;</span>
+        <h2 class="text-center">Carrito de Compras</h2>
+        <div id="carrito" class="list-group"></div>
+        <p id="total" class="price text-center">Total: $0</p>
+
+        <!-- Botón para pagar el carrito -->
+        <button id="pagarBtn" class="btn btn-success">Pagar y generar  factura</button>
     </div>
+</div>
 
-    <script type="module" src="main.js"></script>
+<!-- Notificación de artículo añadido -->
+<div id="notificacion" class="notificacion">Producto añadido al carrito</div>
+
+
+<script type="module" src="main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 
 </body>
 </html>
