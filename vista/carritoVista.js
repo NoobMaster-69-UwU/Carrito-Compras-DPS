@@ -6,6 +6,7 @@ export class CarritoVista {
         this.modal = document.getElementById("modalCarrito");
         this.abrirCarritoBtn = document.getElementById("abrirCarrito");
         this.cerrarModalBtn = document.querySelector(".cerrar");
+        this.pagarBtn = document.getElementById("pagarBtn");
 
         this.configurarEventos();
     }
@@ -13,6 +14,7 @@ export class CarritoVista {
     configurarEventos() {
         this.abrirCarritoBtn.addEventListener("click", () => this.mostrarModal());
         this.cerrarModalBtn.addEventListener("click", () => this.ocultarModal());
+        this.pagarBtn.addEventListener("click", () => this.generarFactura());
         window.addEventListener("click", (e) => {
             if (e.target === this.modal) this.ocultarModal();
         });
@@ -49,8 +51,7 @@ export class CarritoVista {
     }
 
     mostrarCarrito(productos, total, incrementarProducto, decrementarProducto, eliminarProducto) {
-        const carritoElemento = document.getElementById("carrito");
-        carritoElemento.innerHTML = ""; // Limpiar contenido previo
+        this.carritoElement.innerHTML = ""; // Limpiar contenido previo
 
         productos.forEach((producto) => {
             const productoElemento = document.createElement("div");
@@ -68,14 +69,13 @@ export class CarritoVista {
                     <button class="btn-eliminar" data-id="${producto.id}">X</button>
                 </div>
             `;
-            carritoElemento.appendChild(productoElemento);
+            this.carritoElement.appendChild(productoElemento);
         });
 
         // Mostrar total
-        const totalElemento = document.getElementById("total");
-        totalElemento.textContent = `Total: $${total}`;
+        this.totalElement.textContent = `Total: $${total}`;
 
-        // Asignar eventos a los botones
+        // Asignar eventos a los botones después de renderizar los productos
         document.querySelectorAll(".btn-incremento").forEach((btn) => {
             btn.addEventListener("click", (e) => {
                 const id = parseInt(e.target.getAttribute("data-id"));
@@ -96,5 +96,26 @@ export class CarritoVista {
                 eliminarProducto(id);
             });
         });
+    }
+
+    generarFactura() {
+        if (this.carritoElement.children.length === 0) {
+            alert("El carrito está vacío. Agregue productos antes de pagar.");
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("Factura de Compra", 10, 10);
+        let y = 20;
+        this.carritoElement.querySelectorAll(".producto-carrito").forEach((productoElemento) => {
+            const nombre = productoElemento.querySelector(".detalles p").textContent;
+            const precio = productoElemento.querySelector(".detalles p:nth-child(2)").textContent;
+            const cantidad = productoElemento.querySelector(".detalles p:nth-child(3)").textContent;
+            doc.text(`${nombre} - ${precio} x ${cantidad}`, 10, y);
+            y += 10;
+        });
+        doc.text(`Total: ${this.totalElement.textContent}`, 10, y + 10);
+        doc.save("factura.pdf");
     }
 }
