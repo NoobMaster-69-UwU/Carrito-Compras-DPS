@@ -9,9 +9,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     const contenedorProductos = document.getElementById("productos-container");
 
     try {
-        const respuesta = await fetch("./productos/productos.json");
-        const productos = await respuesta.json();
+        let productos = JSON.parse(localStorage.getItem("productosDisponibles"));
 
+        // Si no hay productos en localStorage, cargarlos desde el JSON
+        if (!productos || productos.length === 0) {
+            const respuesta = await fetch("./productos/productos.json");
+            productos = await respuesta.json();
+            localStorage.setItem("productosDisponibles", JSON.stringify(productos));
+        }
+
+        // Limpiar contenedor antes de agregar los productos
+        contenedorProductos.innerHTML = "";
         productos.forEach(producto => {
             const card = document.createElement("div");
             card.classList.add("card");
@@ -20,10 +28,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <div class="card-body">
                     <h5 class="card-title">${producto.nombre}</h5>
                     <p class="card-text price">$${producto.precio}</p>
+                    <p>Stock disponible: <span id="stock-${producto.id}">${producto.stock}</span></p>
                     <button class="btn btn-primary agregar-al-carrito" data-id="${producto.id}">Agregar al carrito</button>
                 </div>
             `;
             contenedorProductos.appendChild(card);
+
         });
 
         // Agregar evento a los botones después de cargarlos
@@ -51,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         modalCarrito.style.display = "none";
     });
 
-    // ⬇️ Agrega el evento al botón de pago para llamar a la función en el controlador
+    //  Agrega el evento al botón de pago para llamar a la función en el controlador
     const botonPagar = document.getElementById("pagarBtn");
     if (botonPagar) {
         botonPagar.addEventListener("click", () => {
