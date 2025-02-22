@@ -1,94 +1,43 @@
 import { CarritoVista } from "./vista/carritoVista.js";
 import { CarritoControlador } from "./controlador/carritoControlador.js";
 
+// Esperar a que el DOM esté completamente cargado
+// para asegurar que los elementos existen antes de interactuar con ellos
 document.addEventListener("DOMContentLoaded", async () => {
+    // Crear una instancia de la vista del carrito
     const vista = new CarritoVista();
+    // Crear una instancia del controlador del carrito, pasándole la vista
     const controlador = new CarritoControlador(vista);
 
-    // Cargar y mostrar productos en la página
+    // Obtener el contenedor donde se mostrarán los productos
     const contenedorProductos = document.getElementById("productos-container");
 
     try {
+        // Intentar obtener los productos almacenados en localStorage
         let productos = JSON.parse(localStorage.getItem("productosDisponibles"));
 
-        // Si no hay productos en localStorage, cargarlos desde el JSON
+        // Si no hay productos en localStorage, cargarlos desde un archivo JSON
         if (!productos || productos.length === 0) {
-            const respuesta = await fetch("./productos/productos.json");
-            productos = await respuesta.json();
-            localStorage.setItem("productosDisponibles", JSON.stringify(productos));
+            const respuesta = await fetch("./productos/productos.json"); // Obtener el JSON de productos
+            productos = await respuesta.json(); // Convertir la respuesta en un objeto JS
+            localStorage.setItem("productosDisponibles", JSON.stringify(productos)); // Guardar en localStorage
         }
 
-        // Limpiar contenedor antes de agregar los productos
+        // Limpiar el contenedor antes de agregar los productos
         contenedorProductos.innerHTML = "";
+        
+        // Recorrer la lista de productos y agregarlos al contenedor
         productos.forEach(producto => {
-            const card = document.createElement("div");
-            card.classList.add("card");
-            card.innerHTML = `
-                <img src="${producto.imagen}" class="card-img-top" alt="${producto.nombre}">
-                <div class="card-body">
-                    <h5 class="card-title">${producto.nombre}</h5>
-                    <p class="card-text price">$${producto.precio}</p>
-                    <p>Stock disponible: <span id="stock-${producto.id}">${producto.stock}</span></p>
-                    <button class="btn btn-primary agregar-al-carrito" data-id="${producto.id}">Agregar al carrito</button>
-                </div>
+            const productoElemento = document.createElement("div"); // Crear un nuevo div
+            productoElemento.classList.add("producto"); // Agregar clase CSS para estilos
+            productoElemento.innerHTML = `
+                <h3>${producto.nombre}</h3>
+                <p>Precio: $${producto.precio.toFixed(2)}</p>
+                <button class="agregar-carrito" data-id="${producto.id}">Agregar al carrito</button>
             `;
-            contenedorProductos.appendChild(card);
-
+            contenedorProductos.appendChild(productoElemento); // Agregar el producto a la página
         });
-
-        // Agregar evento a los botones después de cargarlos
-        document.querySelectorAll('.agregar-al-carrito').forEach(boton => {
-            boton.addEventListener('click', () => {
-                const id = parseInt(boton.getAttribute('data-id'));
-                controlador.agregarProducto(id);
-            });
-        });
-
     } catch (error) {
-        console.error("Error al cargar los productos:", error);
+        console.error("Error cargando los productos:", error);
     }
-
-    // Mostrar el modal del carrito al hacer clic en el botón del carrito
-    const botonCarrito = document.getElementById("abrirCarrito");
-    const modalCarrito = document.getElementById("modalCarrito");
-
-    botonCarrito.addEventListener("click", () => {
-        modalCarrito.style.display = "block";
-    });
-
-    // Cerrar el modal del carrito al hacer clic en el botón de cerrar
-    document.querySelector(".cerrar").addEventListener("click", () => {
-        modalCarrito.style.display = "none";
-    });
-
-    //  Agrega el evento al botón de pago para llamar a la función en el controlador
-    const botonPagar = document.getElementById("pagarBtn");
-    if (botonPagar) {
-        botonPagar.addEventListener("click", () => {
-            controlador.pagarCarrito();
-        });
-    } else {
-        console.error("Error: No se encontró el botón de pagar.");
-    }
-
-    function mostrarNotificacion() {
-        const notificacion = document.getElementById("notificacion");
-        notificacion.style.display = "block";
-        notificacion.style.opacity = "1";
-
-        setTimeout(() => {
-            notificacion.style.opacity = "0";
-            setTimeout(() => {
-                notificacion.style.display = "none";
-            }, 500);
-        }, 2000);
-    }
-
-// Agrega la notificación cuando un producto se añade al carrito
-    document.querySelectorAll('.agregar-al-carrito').forEach(boton => {
-        boton.addEventListener('click', () => {
-            mostrarNotificacion();
-        });
-    });
-
 });

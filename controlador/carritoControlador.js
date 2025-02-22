@@ -1,133 +1,66 @@
 import { Carrito } from "../modelo/carrito.js";
 import { Producto } from "../modelo/producto.js";
 
+// Clase que controla la lógica del carrito de compras
 export class CarritoControlador {
     constructor(vista) {
-        this.carrito = new Carrito();
-        this.vista = vista;
+        this.carrito = new Carrito(); // Instancia del modelo del carrito
+        this.vista = vista; // Referencia a la vista del carrito
 
+        // Si no hay productos disponibles en localStorage, los carga
         if (!localStorage.getItem("productosDisponibles")) {
             this.cargarProductos();
         }
 
-        this.actualizarVistaCarrito(); // Llamamos la función al iniciar
-        this.agregarEventosBotones(); // Agrega eventos a los botones
+        this.actualizarVistaCarrito(); // Muestra el carrito actualizado en la interfaz
+        this.agregarEventosBotones(); // Agrega eventos a los botones de la interfaz
     }
 
+    // Carga los productos desde un archivo JSON y los almacena en localStorage
     async cargarProductos() {
         try {
-            const respuesta = await fetch("../productos/productos.json");
+            const respuesta = await fetch("../productos/productos.json"); // Obtiene los productos desde el JSON
             if (!respuesta.ok) throw new Error(`HTTP error! Status: ${respuesta.status}`);
 
-            const productos = await respuesta.json();
-            localStorage.setItem("productosDisponibles", JSON.stringify(productos));
+            const productos = await respuesta.json(); // Convierte la respuesta en objeto JS
+            localStorage.setItem("productosDisponibles", JSON.stringify(productos)); // Guarda en localStorage
+            
+            // Muestra los productos en la vista y les agrega funcionalidad
             this.vista.mostrarProductos(productos, this.agregarProducto.bind(this));
         } catch (error) {
             console.error("Error cargando productos:", error);
         }
     }
 
-    actualizarVistaCarrito() {
-        this.vista.mostrarCarrito(
-            this.carrito.productos,
-            this.carrito.calcularTotal(),
-            this.incrementarProducto.bind(this),
-            this.decrementarProducto.bind(this),
-            this.eliminarProducto.bind(this)
-        );
-    }
-
+    // Agrega un producto al carrito
     agregarProducto(id) {
-        let productosDisponibles = JSON.parse(localStorage.getItem("productosDisponibles")) || [];
-        let productoEnStock = productosDisponibles.find(p => p.id === id);
-
-        if (productoEnStock && productoEnStock.stock > 0) {
-            let producto = new Producto(id, productoEnStock.nombre, productoEnStock.precio, 1, productoEnStock.imagen);
-            this.carrito.agregarProducto(producto);
-            productoEnStock.stock -= 1;
-            localStorage.setItem("productosDisponibles", JSON.stringify(productosDisponibles));
-
-            document.getElementById(`stock-${id}`).textContent = productoEnStock.stock;
-        } else {
-            alert("No hay stock disponible.");
-        }
-
-        this.actualizarVistaCarrito();
-    }
-
-    incrementarProducto(id) {
-        let productosDisponibles = JSON.parse(localStorage.getItem("productosDisponibles")) || [];
-        let productoEnStock = productosDisponibles.find(p => p.id === id);
-
-        if (productoEnStock && productoEnStock.stock > 0) {
-            this.carrito.actualizarCantProducto(id, 1);
-            productoEnStock.stock -= 1;
-            localStorage.setItem("productosDisponibles", JSON.stringify(productosDisponibles));
-        }
-
-        this.actualizarVistaCarrito();
-    }
-
-    decrementarProducto(id) {
-        let productosDisponibles = JSON.parse(localStorage.getItem("productosDisponibles")) || [];
-        let productoEnStock = productosDisponibles.find(p => p.id === id);
-
-        if (productoEnStock) {
-            this.carrito.actualizarCantProducto(id, -1);
-            productoEnStock.stock += 1;
-            localStorage.setItem("productosDisponibles", JSON.stringify(productosDisponibles));
-        }
-
-        this.actualizarVistaCarrito();
-    }
-
-    eliminarProducto(id) {
-        let productosDisponibles = JSON.parse(localStorage.getItem("productosDisponibles")) || [];
-        let producto = this.carrito.productos.find(p => p.id === id);   
+        const productos = JSON.parse(localStorage.getItem("productosDisponibles")); // Obtiene los productos
+        const producto = productos.find(p => p.id === id); // Encuentra el producto con el ID dado
+        
         if (producto) {
-            let productoEnStock = productosDisponibles.find(p => p.id === id);
-            if (productoEnStock) {
-                productoEnStock.stock += producto.cantidad;
-                localStorage.setItem("productosDisponibles", JSON.stringify(productosDisponibles));
-
-                document.getElementById(`stock-${id}`).textContent = productoEnStock.stock;
-            }
+            this.carrito.agregarProducto(new Producto(producto.id, producto.nombre, producto.precio));
+            this.actualizarVistaCarrito(); // Actualiza la vista después de agregar
         }
+    }
+
+    // Elimina un producto del carrito
+    eliminarProducto(id) {
         this.carrito.eliminarProducto(id);
-
-        this.actualizarVistaCarrito();
+        this.actualizarVistaCarrito(); // Actualiza la vista después de eliminar
     }
 
-    /**
-     * Simula el pago del carrito.
-     */
-    pagarCarrito() {
-        if (this.carrito.productos.length === 0) {
-            atob();
-            return;
-        }
-
-        const totalConIVA = this.carrito.calcularPrecioConIVA().toFixed(2);
-
-        const confirmacion = confirm(`Total a pagar: $${totalConIVA}\n¿Deseas proceder con el pago?`);
-        if (confirmacion) {
-            alert("Pago exitoso. ¡Gracias por tu compra!");
-            this.carrito.limpiarCarrito();
-            this.actualizarVistaCarrito();
-        }
+    // Actualiza la vista del carrito con los productos actuales
+    actualizarVistaCarrito() {
+        this.vista.mostrarCarrito(this.carrito.obtenerProductos(), this.eliminarProducto.bind(this));
     }
 
-    /**
-     * Agrega el evento al botón de pago después de cargar el DOM.
-     */
+    // Agrega eventos a los botones de agregar al carrito
     agregarEventosBotones() {
-        const botonPagar = document.getElementById("pagarBtn");
-        if (botonPagar) {
-            botonPagar.addEventListener("click", () => {
-                this.pagarCarrito();
-            });
-        } else {
-            console.error("Error: No se encontró el botón de pagar.");
-        }
+        document.addEventListener("click", (event) => {
+            if (event.target.classList.contains("agregar-carrito")) {
+                const id = parseInt(event.target.dataset.id, 10);
+                this.agregarProducto(id);
+            }
+        });
     }
 }
