@@ -1,7 +1,7 @@
 /* Estilos generales */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
+    background: #8ad2e8;
     text-align: center;
 }
 
@@ -16,8 +16,8 @@ body {
 
 /* Tarjeta del producto */
 .card {
-    width: 250px;
-    height: 320px; /* Hace la tarjeta cuadrada */
+    width: 18em;
+    height: 30em; 
     border: none;
     border-radius: 12px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -27,6 +27,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    padding-bottom: 30px;
 }
 
 /* Imagen del producto - Cuadrada */
@@ -36,6 +37,8 @@ body {
     border-radius: 12px;
     object-fit: cover; /* Ajusta la imagen sin deformarla */
 }
+
+
 
 /* Estilos del título del producto */
 .card-title {
@@ -51,10 +54,11 @@ body {
 }
 
 /* Botón dentro de la tarjeta */
-.btn {
+.agregar-al-carrito {
     width: 100%;
     margin-top: 10px;
     border-radius: 8px;
+    height: 35%;
 }
 
 /* Estilos para el modal */
@@ -69,6 +73,23 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
+}
+
+.prod-individual{
+    margin-top: 30px;
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px; 
+    text-align: center; 
+}
+
+.acciones{
+    margin-left: 25px;
+}
+
+.detalles{
+    margin-left: 30px
 }
 
 /* Contenido del modal */
