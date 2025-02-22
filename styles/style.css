@@ -84,6 +84,15 @@ body {
     text-align: center; 
 }
 
+/*Imagen del Carrito de Compras*/
+
+.imagen-producto{
+    width: 20em;
+    height: 15em; /* Hace que la imagen sea cuadrada */
+    border-radius: 12px;
+    object-fit: cover;
+}
+
 .acciones{
     margin-left: 25px;
 }
