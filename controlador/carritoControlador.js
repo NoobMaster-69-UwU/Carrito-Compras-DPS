@@ -46,6 +46,8 @@ export class CarritoControlador {
             this.carrito.agregarProducto(producto);
             productoEnStock.stock -= 1;
             localStorage.setItem("productosDisponibles", JSON.stringify(productosDisponibles));
+
+            document.getElementById(`stock-${id}`).textContent = productoEnStock.stock;
         } else {
             alert("No hay stock disponible.");
         }
@@ -81,12 +83,14 @@ export class CarritoControlador {
 
     eliminarProducto(id) {
         let productosDisponibles = JSON.parse(localStorage.getItem("productosDisponibles")) || [];
-        let producto = this.carrito.productos.find(p => p.id === id);
+        let producto = this.carrito.productos.find(p => p.id === id);   
         if (producto) {
             let productoEnStock = productosDisponibles.find(p => p.id === id);
             if (productoEnStock) {
                 productoEnStock.stock += producto.cantidad;
                 localStorage.setItem("productosDisponibles", JSON.stringify(productosDisponibles));
+
+                document.getElementById(`stock-${id}`).textContent = productoEnStock.stock;
             }
         }
         this.carrito.eliminarProducto(id);
