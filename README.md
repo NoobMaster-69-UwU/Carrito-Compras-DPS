@@ -1,4 +1,4 @@
-# Carrito de Compras con Facturación
+# Carrito de Compras con Facturación Usando JS
 
 ## Descripción General
 Una aplicación web de carrito de compras con funcionalidad de facturación, desarrollada como parte del curso de Diseño y Desarrollo de Software Multiplataforma en la Universidad Don Bosco.
